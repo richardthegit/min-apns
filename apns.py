@@ -71,12 +71,14 @@ def send_message(token, message, badge_count = None, extra = None):
     with httpx.Client(http2 = True, headers = headers) as client:
         r = client.post(f'{CONF["url"]}/3/device/{token}', json = args)
 
+    # Response doc:
+    # https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
     if r.status_code == 200:
         # All good; the response will be empty in this case.
         return True
 
-    if r.status_code == 400:
-        # Bad token; it happens.
+    if r.status_code == 410:
+        # Inactive token; it happens.
         return False
 
     # Some other error - maybe the config is bad? Raise it.
